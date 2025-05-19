@@ -11,7 +11,7 @@ echo "# Minify file-file html #"
 find ./ -type f -name "*.html" | while read -r file; do
   out=./dist/"$file"
   mkdir -p "$(dirname "$out")"
-  html-minifier --collapse-whitespace --remove-comments --minify-js true --minify-css true --output "$out" "$file"
+  html-minifier-terser --collapse-whitespace --remove-comments --minify-js true --minify-css true --output "$out" "$file"
 done
 
 echo "# Minify file-file css #"
@@ -31,70 +31,21 @@ done
 echo "# Mengoptimasi gambar #"
 find ./dist -type f \( -iname "*.jpg" -o -iname "*.jpeg" \) -exec jpegoptim --max=80 {} \;
 
-echo "Validasi index.html"
-OUTPUT=$(html-validator --file dist/index.html --validator http://localhost:8888 --verbose 2>&1)
-echo "$OUTPUT"
+echo "Validasi file-file html"
+for file in dist/*.html; do
+  echo "Validasi $file"
+  OUTPUT=$(html-validator --file "$file" --validator http://localhost:8888 --verbose 2>&1)
+  echo "$OUTPUT"
 
-if echo "$OUTPUT" | grep -q "Error:"; then
-  echo "STATUS: index.html masih ada ERROR. Deployment dibatalkan."
-  exit 1
-elif echo "$OUTPUT" | grep -q "Warning:"; then
-  echo "STATUS: index.html ada WARNING. Perlu dicek lebih lanjut."
-else
-  echo "STATUS: index.html valid. Tidak ada error atau warning."
-fi
-
-echo "# Validasi about.html #"
-OUTPUT=$(html-validator --file dist/about.html --validator http://localhost:8888 --verbose 2>&1)
-echo "$OUTPUT"
-
-if echo "$OUTPUT" | grep -q "Error:"; then
-  echo "STATUS: about.html masih ada ERROR. Deployment dibatalkan."
-  exit 1
-elif echo "$OUTPUT" | grep -q "Warning:"; then
-  echo "STATUS: about.html ada WARNING. Perlu dicek lebih lanjut."
-else
-  echo "STATUS: about.html valid. Tidak ada error atau warning."
-fi
-
-echo "# Validasi blog.html #"
-OUTPUT=$(html-validator --file dist/blog.html --validator http://localhost:8888 --verbose 2>&1)
-echo "$OUTPUT"
-
-if echo "$OUTPUT" | grep -q "Error:"; then
-  echo "STATUS: blog.html masih ada ERROR. Deployment dibatalkan."
-  exit 1
-elif echo "$OUTPUT" | grep -q "Warning:"; then
-  echo "STATUS: blog.html ada WARNING. Perlu dicek lebih lanjut."
-else
-  echo "STATUS: blog.html valid. Tidak ada error atau warning."
-fi
-
-echo "# Validasi contact.html #"
-OUTPUT=$(html-validator --file dist/contact.html --validator http://localhost:8888 --verbose 2>&1)
-echo "$OUTPUT"
-
-if echo "$OUTPUT" | grep -q "Error:"; then
-  echo "STATUS: contact.html masih ada ERROR. Deployment dibatalkan."
-  exit 1
-elif echo "$OUTPUT" | grep -q "Warning:"; then
-  echo "STATUS: contact.html ada WARNING. Perlu dicek lebih lanjut."
-else
-  echo "STATUS: contact.html valid. Tidak ada error atau warning."
-fi
-
-echo "# Validasi shop.html #"
-OUTPUT=$(html-validator --file dist/shop.html --validator http://localhost:8888 --verbose 2>&1)
-echo "$OUTPUT"
-
-if echo "$OUTPUT" | grep -q "Error:"; then
-  echo "STATUS: shop.html masih ada ERROR. Deployment dibatalkan."
-  exit 1
-elif echo "$OUTPUT" | grep -q "Warning:"; then
-  echo "STATUS: shop.html ada WARNING. Perlu dicek lebih lanjut."
-else
-  echo "STATUS: shop.html valid. Tidak ada error atau warning."
-fi
+  if echo "$OUTPUT" | grep -q "Error:"; then
+    echo "STATUS: $file masih ada ERROR. Deployment dibatalkan."
+    exit 1
+  elif echo "$OUTPUT" | grep -q "Warning:"; then
+    echo "STATUS: $file ada WARNING. Perlu dicek lebih lanjut."
+  else
+    echo "STATUS: $file valid. Tidak ada error atau warning."
+  fi
+done
 
 echo "& Stop dan Remove Container Lama #"
 docker stop jenkinsapss 2>/dev/null || true
