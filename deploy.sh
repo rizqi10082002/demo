@@ -11,20 +11,21 @@ echo "# Minify file-file html #"
 find ./ -type f -name "*.html" | while read -r file; do
   out=./dist/"$file"
   mkdir -p "$(dirname "$out")"
-  html-minifier --collapse-whitespace --remove-comments --output "$out" "$file"
+  html-minifier --collapse-whitespace --remove-comments --minify-js true --minify-css true --output "$out" "$file"
 done
 
 echo "# Minify file-file css #"
 find ./ -type f -name "*.css" | while read -r file; do
   out=./dist/"$file"
   mkdir -p "$(dirname "$out")"
+  cleancss -o "$out" "$file"
 done
 
 echo "# Minify file-file js #"
 find ./ -type f -name "*.js" | while read -r file; do
   out=./dist/"$file"
   mkdir -p "$(dirname "$out")"
-  terser "$file" --output "$out"
+  terser "$file" -c -m -o "$out"
 done
 
 echo "# Mengoptimasi gambar #"
