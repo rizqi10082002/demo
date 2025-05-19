@@ -28,8 +28,15 @@ find ./ -type f -name "*.js" | while read -r file; do
   terser "$file" -c -m -o "$out"
 done
 
-echo "# Mengoptimasi gambar #"
-find ./dist -type f \( -iname "*.jpg" -o -iname "*.jpeg" \) -exec jpegoptim --max=80 {} \;
+echo "# Menyalin semua gambar ke dist/images #"
+mkdir -p dist/images
+cp -r images/* dist/images/
+
+echo "# Mengoptimasi gambar PNG #"
+find dist/images -type f -iname "*.png" -exec optipng -o7 {} \;
+
+echo "# Mengoptimasi gambar JPG/JPEG #"
+find dist/images -type f \( -iname "*.jpg" -o -iname "*.jpeg" \) -exec jpegoptim --max=80 {} \;
 
 echo "Validasi file-file html"
 for file in dist/*.html; do
