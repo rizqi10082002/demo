@@ -33,7 +33,7 @@ mkdir -p dist/images
 cp -r images/* dist/images/
 
 echo "# Mengoptimasi gambar PNG #"
-find dist/images -type f -iname "*.png" -exec optipng -o7 {} \;
+find dist/images -type f -iname "*.png" -exec optipng -o1 {} \;
 
 echo "# Mengoptimasi gambar JPG/JPEG #"
 find dist/images -type f \( -iname "*.jpg" -o -iname "*.jpeg" \) -exec jpegoptim --max=80 {} \;
